@@ -1,0 +1,40 @@
+{% if addresses %}
+<div class="row">
+  {% for address in addresses %}
+  <div class="col-md-6 mb-4">
+    <div
+      class="card p-3 card-address {% if address.id == selected_id %}selected{% endif %}"
+    >
+      <h5 class="mt-2">{{ address.address }}</h5>
+      <p class="mb-1 text-muted">
+        {{ address.landmark }}, {{ address.district }}, {{ address.state }} - {{
+        address.pincode }}
+      </p>
+
+      <div class="action-buttons">
+        <form method="POST" action="/select-address/{{ address.id }}">
+          <button class="btn btn-outline-primary btn-sm" type="submit">
+            {% if address.id == selected_id %}✅ Selected{% else %}Select{%
+            endif %}
+          </button>
+        </form>
+
+        <a href="/edit-address/{{ address.id }}" class="btn btn-warning btn-sm"
+          >✏️ Edit</a
+        >
+
+        <form
+          action="/delete-address/{{ address.id }}"
+          method="POST"
+          onsubmit="return confirm('Are you sure to delete this address?')"
+        >
+          <button class="btn btn-danger btn-sm">🗑️ Delete</button>
+        </form>
+      </div>
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% else %}
+<div class="alert alert-info">You have no saved addresses.</div>
+{% endif %}
