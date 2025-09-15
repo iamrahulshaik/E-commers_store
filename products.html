@@ -1,0 +1,314 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{ category }} Collection</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <style>
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        overflow-x: hidden;
+        background: #cbcbcb no-repeat center center fixed;
+        background-size: cover;
+        font-family: "Segoe UI", sans-serif;
+      }
+
+      .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        background-color: rgba(0, 0, 0, 0.6);
+        z-index: -1;
+      }
+
+      .container {
+        position: relative;
+        z-index: 2;
+        color: #fff;
+      }
+
+      .card {
+        background-color: #0b4d59;
+        border: none;
+        transition: transform 0.3s ease;
+        height: 100%;
+        position: relative;
+        overflow: hidden;
+      }
+
+      .card:hover {
+        transform: scale(1.03);
+      }
+
+      .carousel-inner img {
+        height: 250px;
+        width: 100%;
+        object-fit: cover;
+        aspect-ratio: 1 / 1;
+      }
+
+      .card-body {
+        text-align: center;
+        padding: 15px;
+      }
+
+      .out-of-stock-label {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        background-color: rgba(255, 255, 255, 0.9);
+        opacity: 0.7;
+        color: black;
+        padding: 6px 12px;
+        border-radius: 5px;
+        font-weight: bold;
+        z-index: 5;
+      }
+
+      .navbar-dark .nav-link {
+        color: #fff !important;
+      }
+
+      .navbar-dark .nav-link:hover {
+        color: #ffc107 !important;
+      }
+
+      .navbar-brand img {
+        height: 40px;
+      }
+
+      .search-bar {
+        max-width: 300px;
+      }
+
+      @media (max-width: 767.98px) {
+        .col-6 {
+          max-width: 50%;
+          flex: 0 0 50%;
+        }
+        .search-bar {
+          width: 100%;
+          margin-top: 10px;
+        }
+      }
+
+      @media (max-width: 767.98px) {
+        /* Keep navbar height comfortable */
+        .navbar {
+          padding-top: 10px;
+          padding-bottom: 10px;
+        }
+
+        /* Make all items in navbar stay in one row and wrap properly if needed */
+        .navbar .container-fluid {
+          flex-wrap: nowrap !important;
+          align-items: center !important;
+        }
+
+        /* Search bar should shrink to fit in row */
+        .navbar .search-bar {
+          flex: 1 1 auto !important;
+          min-width: 0;
+          margin: 0 10px;
+        }
+
+        .navbar .search-bar input {
+          width: 100%;
+          font-size: 13px;
+          padding: 4px 8px;
+        }
+
+        /* Cart & Home buttons aligned right, spaced nicely */
+        .navbar .nav-actions {
+          display: flex;
+          gap: 10px;
+          white-space: nowrap;
+        }
+
+        .navbar .nav-actions .nav-link {
+          padding: 4px 6px;
+          font-size: 14px;
+        }
+
+        /* Brand logo shrinks */
+        .navbar-brand img {
+          height: 30px;
+        }
+      }
+
+      .form-control {
+        width: 90%;
+      }
+
+      @media (max-width: 767.98px) {
+        .product-card {
+          flex: 0 0 100%;
+          max-width: 100%;
+        }
+
+        .carousel-inner img {
+          height: 220px !important;
+          object-fit: cover;
+        }
+      }
+      .navbar .bi-house-door-fill {
+        font-size: 1.5rem !important; /* Larger icon */
+        margin-right: 4px;
+      }
+
+      .bg-dark {
+        --bs-bg-opacity: 1;
+        background-color: #0b4d59 !important;
+      }
+      .text-dark {
+        --bs-text-opacity: 1;
+        color: rgb(255 255 255) !important;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="overlay"></div>
+
+    <!-- ✅ Navbar -->
+    <!-- ✅ Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark py-2">
+      <div
+        class="container-fluid d-flex flex-wrap justify-content-between align-items-center"
+      >
+        <!-- 🔁 Small Logo (Mobile only) -->
+        <a class="navbar-brand d-block d-md-none" href="/">
+          <img
+            src="/static/images/logo_uc.png"
+            alt="Small Logo"
+            style="height: 36px"
+          />
+        </a>
+
+        <!-- 🔁 Brand Name Logo (Desktop only) -->
+        <a class="navbar-brand d-none d-md-block" href="/">
+          <img
+            src="/static/images/IMG_0276.PNG"
+            alt="URBAN CYLNE Logo"
+            style="height: 40px"
+          />
+        </a>
+
+        <!-- 🔍 Centered Search (both views, behaves differently per screen size) -->
+        <div
+          class="flex-grow-1 text-center mt-2 mt-md-0"
+          style="max-width: 400px; margin: auto"
+        >
+          <input
+            type="text"
+            id="searchInput"
+            class="form-control form-control-sm mx-auto"
+            placeholder="Search product name..."
+            oninput="filterProducts()"
+          />
+        </div>
+
+        <!-- 🛒 Cart + Home (Right side) -->
+        <div class="d-flex align-items-center gap-3 mt-2 mt-md-0">
+          <a class="nav-link text-white d-flex align-items-center" href="/">
+            <i class="bi bi-house-door-fill me-1"></i>
+            <span class="d-none d-sm-inline">Home</span>
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- ✅ Product Grid -->
+    <div class="container py-4">
+      <div class="row" id="productGrid">
+        {% for p in products %} {% if p.status != 'removed' %}
+        <div
+          class="col-6 col-sm-6 col-md-3 col-lg-3 mb-4 product-card"
+          data-name="{{ p.name | lower }}"
+        >
+          <div class="card shadow" id="card-{{ p.id }}">
+            <a href="/product/{{ p.id }}">
+              <div
+                id="carousel-{{ p.id }}"
+                class="carousel slide"
+                data-bs-ride="carousel"
+              >
+                <div class="carousel-inner">
+                  {% for img in p.images %}
+                  <div
+                    class="carousel-item {% if loop.first %}active{% endif %}"
+                  >
+                    <div class="position-relative">
+                      <img
+                        src="/static/images/{{ img }}"
+                        class="d-block w-100"
+                        alt="{{ p.name }}"
+                      />
+                      {% if p.status == 'outofstock' %}
+                      <div class="out-of-stock-label">Out of Stock</div>
+                      {% endif %}
+                    </div>
+                  </div>
+                  {% endfor %}
+                </div>
+                {% if p.images|length > 1 %}
+                <button
+                  class="carousel-control-prev"
+                  type="button"
+                  data-bs-target="#carousel-{{ p.id }}"
+                  data-bs-slide="prev"
+                >
+                  <span class="carousel-control-prev-icon"></span>
+                </button>
+                <button
+                  class="carousel-control-next"
+                  type="button"
+                  data-bs-target="#carousel-{{ p.id }}"
+                  data-bs-slide="next"
+                >
+                  <span class="carousel-control-next-icon"></span>
+                </button>
+                {% endif %}
+              </div>
+            </a>
+
+            <div class="card-body">
+              <h5 class="card-title text-dark mb-1">{{ p.name }}</h5>
+              <p class="card-text fw-semibold text-dark mb-2">₹{{ p.price }}</p>
+            </div>
+          </div>
+        </div>
+        {% endif %} {% endfor %}
+      </div>
+    </div>
+
+    <!-- JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      function filterProducts() {
+        const search = document
+          .getElementById("searchInput")
+          .value.toLowerCase();
+        const cards = document.querySelectorAll(".product-card");
+
+        cards.forEach((card) => {
+          const name = card.getAttribute("data-name");
+          card.style.display = name.includes(search) ? "block" : "none";
+        });
+      }
+    </script>
+  </body>
+</html>

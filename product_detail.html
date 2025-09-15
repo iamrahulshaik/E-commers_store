@@ -1,0 +1,361 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>{{ product.name }}</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        font-family: "Segoe UI", sans-serif;
+        background-color: #f9f9f9;
+        margin: 0;
+        padding: 0;
+      }
+
+      .product-images #main-image {
+        width: 100%;
+        aspect-ratio: 1 / 1.3;
+        object-fit: cover;
+        border-radius: 8px;
+      }
+
+      .thumbnail img {
+        width: 60px;
+        aspect-ratio: 3 / 4;
+        height: auto;
+        object-fit: cover;
+        margin-right: 10px;
+        cursor: pointer;
+        border: 2px solid transparent;
+        border-radius: 5px;
+      }
+
+      .thumbnail img.selected {
+        border-color: #000;
+      }
+
+      .btn {
+        background-color: #0b4d59;
+        color: white;
+        border: none;
+      }
+      .btn:hover {
+        background-color: #072d38ff;
+        color: white;
+      }
+
+      .size-button {
+        border: 1px solid #ccc;
+        border-radius: 50px;
+        padding: 10px 18px;
+        margin: 5px;
+        cursor: pointer;
+        background-color: #fff;
+        display: inline-block;
+        position: relative;
+      }
+
+      .size-button.selected {
+        background-color: #0b4d59;
+        color: #fff;
+      }
+      .w-100 {
+        width: 50% !important;
+      }
+
+      .size-button.disabled {
+        color: #aaa;
+        border-color: #ddd;
+        cursor: not-allowed;
+        background-color: #f2f2f2;
+      }
+      .size-button.disabled::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 0;
+        width: 100%;
+        height: 2px;
+        background: red;
+        transform: rotate(-20deg);
+      }
+
+      .price {
+        font-size: 24px;
+        font-weight: bold;
+      }
+
+      .btn-add {
+        background-color: #0b4d59;
+        border: none;
+        padding: 10px 20px;
+        color: white;
+        font-size: 16px;
+        margin-top: 20px;
+        width: 50%;
+      }
+
+      .btn-add:hover {
+        background-color: #072d38ff;
+        color: white;
+      }
+
+      .btn-add:disabled {
+        background-color: #ccc;
+        cursor: not-allowed;
+      }
+
+      #product-description {
+        display: none;
+        font-size: 15px;
+        color: #333;
+        margin-top: 10px;
+      }
+
+      #toggle-details {
+        background-color: #426c96;
+        border: none;
+        color: white;
+        padding: 6px 14px;
+        border-radius: 5px;
+        margin-bottom: 10px;
+        font-size: 14px;
+        cursor: pointer;
+      }
+
+      #toggle-details:hover {
+        background-color: #0056b3;
+      }
+
+      @media (max-width: 768px) {
+        .btn-add,
+        #toggle-details {
+          width: 50%;
+        }
+      }
+    </style>
+  </head>
+  <body>
+    <div class="container py-4">
+      <div class="d-flex justify-content-between align-items-center mb-3">
+        <a href="javascript:history.back()" class="btn btn-outline-secondary"
+          >← Back</a
+        >
+        <a href="/cart" class="btn btn-danger">Cart</a>
+      </div>
+
+      <div class="row flex-column flex-md-row">
+        <div class="col-12 col-md-6 product-images mb-4">
+          <img
+            id="main-image"
+            src="/static/images/{{ product.images[0] }}"
+            alt="{{ product.name }}"
+          />
+          <div class="d-flex thumbnail mt-2">
+            {% for img in product.images %}
+            <img
+              src="/static/images/{{ img }}"
+              alt="thumb"
+              onclick="setMainImage(this)"
+              {%
+              if
+              loop.first
+              %}class="selected"
+              {%
+              endif
+              %}
+            />
+            {% endfor %}
+          </div>
+        </div>
+
+        <div class="col-12 col-md-6 product-details">
+          <h2>{{ product.name }}</h2>
+          <p class="price">₹{{ product.price }}</p>
+          <p class="text-muted">inclusive of all taxes</p>
+
+          <!-- Show Details Button -->
+          <div class="mt-2">
+            <button
+              id="toggle-details"
+              class="btn btn-primary w-100"
+              onclick="toggleDescription()"
+            >
+              Show Details
+            </button>
+          </div>
+
+          <!-- Product Description -->
+          <div id="product-description" class="mt-2">
+            <p>{{ product.description }}</p>
+          </div>
+
+          <!-- Show Size Chart Button (now clearly below) -->
+          <div class="mt-2">
+            <button
+              type="button"
+              class="btn btn-outline-secondary w-100"
+              onclick="toggleSizeChart(event)"
+            >
+              Show Size Chart
+            </button>
+          </div>
+
+          <!-- Size Chart Container -->
+          <div id="size-chart-container" class="mt-3" style="display: none">
+            {% if product.size_chart %}
+            <img
+              src="/static/images/{{ product.size_chart }}"
+              alt="Size Chart"
+              style="
+                max-width: 100%;
+                border: 1px solid #ccc;
+                border-radius: 8px;
+              "
+            />
+            {% else %}
+            <p class="text-muted">No size chart available for this product.</p>
+            {% endif %}
+          </div>
+
+          {% if product.status == 'outofstock' %}
+          <button class="btn btn-add mt-4" disabled>Out of Stock</button>
+          {% else %}
+          <p class="fw-semibold mt-3">SELECT SIZE</p>
+          <div id="size-options">
+            {% set selected_size = request.form.get('size') or
+            request.args.get('size') or '' %} {% set available_sizes =
+            product.sizes.split(',') if product.sizes else ['S','M','L','XL'] %}
+            {% for size in ['S','M','L','XL'] %}
+            <span
+              class="size-button {% if size not in available_sizes %}disabled{% elif size == selected_size %}selected{% endif %}"
+              {%
+              if
+              size
+              in
+              available_sizes
+              %}onclick="selectSize(this)"
+              {%
+              endif
+              %}
+            >
+              {{ size }}
+            </span>
+            {% endfor %}
+          </div>
+
+          <form onsubmit="return handleAddToCart(event, {{ product.id }})">
+            <input type="hidden" name="size" id="selected-size" />
+            <button type="submit" class="btn btn-add mt-3">Add to Cart</button>
+
+           
+
+            <!-- Dynamic Size Chart Image -->
+            <div id="size-chart-container" class="mt-3" style="display: none">
+              {% if product.size_chart %}
+              <img
+                src="/static/images/{{ product.size_chart }}"
+                alt="Size Chart"
+                style="
+                  max-width: 100%;
+                  border: 1px solid #ccc;
+                  border-radius: 8px;
+                "
+              />
+              {% else %}
+              <p class="text-muted">
+                No size chart available for this product.
+              </p>
+              {% endif %}
+            </div>
+
+            <div id="cart-message" class="mt-3"></div>
+          </form>
+          {% endif %}
+        </div>
+      </div>
+    </div>
+
+    <script>
+      function setMainImage(el) {
+        const mainImg = document.getElementById("main-image");
+        mainImg.src = el.src;
+        document
+          .querySelectorAll(".thumbnail img")
+          .forEach((img) => img.classList.remove("selected"));
+        el.classList.add("selected");
+      }
+
+      function selectSize(button) {
+        if (button.classList.contains("disabled")) return;
+        document
+          .querySelectorAll(".size-button")
+          .forEach((btn) => btn.classList.remove("selected"));
+        button.classList.add("selected");
+        document.getElementById("selected-size").value =
+          button.innerText.trim();
+      }
+
+      function toggleDescription() {
+        const desc = document.getElementById("product-description");
+        const toggleBtn = document.getElementById("toggle-details");
+        if (desc.style.display === "none" || desc.style.display === "") {
+          desc.style.display = "block";
+          toggleBtn.textContent = "Hide Details";
+        } else {
+          desc.style.display = "none";
+          toggleBtn.textContent = "Show Details";
+        }
+      }
+
+      function handleAddToCart(event, productId) {
+        event.preventDefault();
+        const selected = document.querySelector(".size-button.selected");
+        const msgDiv = document.getElementById("cart-message");
+
+        if (!selected) {
+          msgDiv.innerHTML = `<div class="alert alert-warning mt-2">⚠️ Please select a size.</div>`;
+          return false;
+        }
+
+        const size = selected.innerText.trim();
+        fetch(`/add-to-cart/${productId}`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            "X-Requested-With": "XMLHttpRequest",
+          },
+          body: JSON.stringify({ size: size }),
+        })
+          .then((res) => res.json())
+          .then((data) => {
+            if (data.success) {
+              msgDiv.innerHTML = `<div class="alert alert-success mt-2">✅ Added to cart</div>`;
+              setTimeout(() => (msgDiv.innerHTML = ""), 3000);
+            } else {
+              msgDiv.innerHTML = `<div class="alert alert-danger mt-2">❌ ${
+                data.message || "Failed to add."
+              }</div>`;
+            }
+          })
+          .catch((err) => {
+            console.error("Add to cart error:", err);
+            msgDiv.innerHTML = `<div class="alert alert-danger mt-2">❌ Error adding to cart.</div>`;
+          });
+        return false;
+      }
+
+      function toggleSizeChart(event) {
+        const chart = document.getElementById("size-chart-container");
+        const btn = event.target;
+        const isVisible = chart.style.display === "block";
+        chart.style.display = isVisible ? "none" : "block";
+        btn.textContent = isVisible ? "Show Size Chart" : "Hide Size Chart";
+      }
+    </script>
+  </body>
+</html>

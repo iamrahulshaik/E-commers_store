@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Choose or Add Address</title>
+    <link
+      rel="stylesheet"
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+    />
+    <script>
+      function toggleNewAddress(showNew) {
+        document.getElementById("existing-address-section").style.display = showNew ? "none" : "block";
+        document.getElementById("new-address-section").style.display = showNew ? "block" : "none";
+      }
+
+      // Auto show new address form if no saved addresses
+      window.onload = function () {
+        {% if not addresses %}
+          toggleNewAddress(true);
+        {% endif %}
+      };
+    </script>
+  </head>
+  <body class="bg-light">
+    <div class="container py-5">
+      <h2 class="mb-4">Choose Delivery Address</h2>
+
+      {% if addresses %}
+      <!-- ✅ Option Buttons -->
+      <div class="mb-4">
+        <button
+          type="button"
+          class="btn btn-outline-primary me-2"
+          onclick="toggleNewAddress(false)"
+        >
+          Use Existing Address
+        </button>
+        <button
+          type="button"
+          class="btn btn-outline-secondary"
+          onclick="toggleNewAddress(true)"
+        >
+          Add New Address
+        </button>
+      </div>
+
+      <!-- ✅ Existing Address Section -->
+      <div id="existing-address-section">
+        <form method="POST" action="/select-address">
+          {% for addr in addresses %}
+          <div class="form-check mb-2">
+            <input
+              class="form-check-input"
+              type="radio"
+              name="selected_address"
+              id="addr{{ addr.id }}"
+              value="{{ addr.id }}"
+              {%
+              if
+              loop.first
+              %}checked{%
+              endif
+              %}
+              required
+            />
+            <label class="form-check-label" for="addr{{ addr.id }}">
+              {{ addr.address }}, {{ addr.landmark }}, {{ addr.district }}, {{
+              addr.state }} - {{ addr.pincode }}
+            </label>
+          </div>
+          {% endfor %}
+          <button class="btn btn-success mt-3">
+            Continue with Selected Address
+          </button>
+        </form>
+      </div>
+      {% endif %}
+
+      <!-- ✅ New Address Form (always rendered, conditionally visible) -->
+      <div
+        id="new-address-section"
+        {%
+        if
+        addresses
+        %}style="display: none;"
+        {%
+        endif
+        %}
+      >
+        <h4 class="mt-4">Add New Address</h4>
+        <form method="POST" action="/add-address">
+          <div class="row">
+            <div class="col-md-6 mb-3">
+              <label class="form-label">State</label>
+              <input type="text" name="state" class="form-control" required />
+            </div>
+            <div class="col-md-6 mb-3">
+              <label class="form-label">District</label>
+              <input
+                type="text"
+                name="district"
+                class="form-control"
+                required
+              />
+            </div>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Full Address</label>
+            <textarea
+              name="address"
+              class="form-control"
+              rows="2"
+              required
+            ></textarea>
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Landmark</label>
+            <input type="text" name="landmark" class="form-control" required />
+          </div>
+          <div class="mb-3">
+            <label class="form-label">Pincode</label>
+            <input
+              type="text"
+              name="pincode"
+              class="form-control"
+              maxlength="6"
+              required
+            />
+          </div>
+          <button type="submit" class="btn btn-primary">Add & Continue</button>
+        </form>
+      </div>
+    </div>
+  </body>
+</html>

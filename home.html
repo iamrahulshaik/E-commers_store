@@ -1,0 +1,401 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Home - URBAN CYLNE</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+
+    <!-- Bootstrap CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+
+    <!-- Bootstrap Icons CSS -->
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+
+    <style>
+      body,
+      html {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+        background: #cbcbcb no-repeat center center fixed;
+        background-size: cover;
+        padding-top: 70px;
+      }
+
+      .overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        height: 100%;
+        width: 100%;
+        z-index: -1;
+      }
+
+      .container {
+        position: relative;
+        z-index: 2;
+        color: #fff;
+      }
+
+      .card {
+        background-color: #0b4d59;
+        transition: transform 0.3s ease;
+      }
+
+      .text-dark {
+        --bs-text-opacity: 1;
+        color: rgb(255 255 255) !important;
+      }
+      .card:hover {
+        transform: scale(1.03);
+      }
+
+      h2,
+      h3 {
+        color: #0b4d59;
+      }
+
+      .navbar-dark .nav-link {
+        color: #fff !important;
+      }
+
+      .navbar-dark .nav-link:hover {
+        color: #ffc107 !important;
+      }
+
+      .navbar-brand img {
+        height: 40px;
+      }
+
+      a.text-decoration-none:hover {
+        text-decoration: none;
+      }
+
+      .customize-message {
+        background-color: rgba(255, 255, 255, 0.2);
+        padding: 15px;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        color: #426c96;
+        box-shadow: 0 0 10px rgba(255, 255, 255, 0.1);
+        margin-top: 20px;
+      }
+
+      .insta-link {
+        color: #0b4d59;
+        font-weight: bold;
+        text-decoration: none;
+      }
+
+      .insta-link:hover {
+        color: #426c96;
+        text-decoration: none;
+      }
+
+      .bg-dark {
+        --bs-bg-opacity: 1;
+        background-color: #0b4d59 !important;
+      }
+      /* Reduce white space below navbar */
+      body {
+        padding-top: 60px !important; /* matches navbar height */
+      }
+
+      .navbar {
+        margin-bottom: 0 !important;
+      }
+
+      .container.py-5 {
+        padding-top: 0.5rem !important; /* was 3rem */
+        padding-bottom: 0.5rem !important;
+      }
+      body {
+        padding-top: 10px !important;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="overlay"></div>
+
+    <!-- ✅ Fixed Navbar -->
+    <nav class="navbar navbar-expand-lg navbar-dark bg-dark fixed-top py-1">
+      <div class="container d-flex justify-content-between align-items-center">
+        <!-- ✅ Logo for mobile, Brand image for desktop -->
+        <a class="navbar-brand d-flex align-items-center" href="/">
+          <img
+            src="static\images\logo_uc.png"
+            alt="UC Logo"
+            class="d-lg-none"
+            style="height: 40px"
+          />
+          <img
+            src="/static/images/IMG_0276.png"
+            class="d-none d-lg-inline"
+            alt="Urban Clyne Brand"
+            style="height: 45px"
+          />
+        </a>
+
+        <!-- ✅ Nav Links -->
+        <div class="d-flex align-items-center gap-3">
+          <a class="nav-link text-white d-flex align-items-center" href="/cart">
+            <i class="bi bi-cart-fill me-1"></i> Cart
+          </a>
+
+          {% if session.get('user_id') %}
+          <!-- ✅ Menu Dropdown -->
+          <div class="dropdown">
+            <button
+              class="bg-transparent border-0 text-white fs-4"
+              id="menuDropdown"
+              data-bs-toggle="dropdown"
+              aria-expanded="false"
+            >
+              <i class="bi bi-list"></i>
+            </button>
+
+            <ul
+              class="dropdown-menu dropdown-menu-end"
+              aria-labelledby="menuDropdown"
+            >
+              <li>
+                <a
+                  class="dropdown-item"
+                  href="#"
+                  data-bs-toggle="modal"
+                  data-bs-target="#accountModal"
+                  >My Account</a
+                >
+              </li>
+              <li><a class="dropdown-item" href="/my-orders">My Orders</a></li>
+              <li>
+                <a
+                  class="dropdown-item"
+                  href="#"
+                  data-bs-toggle="modal"
+                  data-bs-target="#supportModal"
+                >
+                  Support
+                </a>
+              </li>
+
+              <li>
+                <a class="dropdown-item text-danger" href="/logout">Logout</a>
+              </li>
+            </ul>
+          </div>
+          {% else %}
+          <a class="nav-link text-white" href="/login">Login</a>
+          {% endif %}
+        </div>
+      </div>
+    </nav>
+
+    <!-- ✅ My Account Modal -->
+    <div
+      class="modal fade"
+      id="accountModal"
+      tabindex="-1"
+      aria-labelledby="accountModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-white rounded shadow">
+          <div class="modal-header">
+            <h5 class="modal-title" id="accountModalLabel">My Account</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body">
+            <p><strong>Name:</strong> {{ session['user_name'] }}</p>
+            <p><strong>Email:</strong> {{ session['user_email'] }}</p>
+            <p><strong>Contact:</strong> {{ session['user_contact'] }}</p>
+            <p><strong>Address:</strong> {{ session['user_address'] }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- ✅ Support Modal -->
+    <div
+      class="modal fade"
+      id="supportModal"
+      tabindex="-1"
+      aria-labelledby="supportModalLabel"
+      aria-hidden="true"
+    >
+      <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content bg-white rounded shadow">
+          <div class="modal-header">
+            <h5 class="modal-title" id="supportModalLabel">Support</h5>
+            <button
+              type="button"
+              class="btn-close"
+              data-bs-dismiss="modal"
+              aria-label="Close"
+            ></button>
+          </div>
+          <div class="modal-body text-center">
+            <p class="mb-3">Need help or have a question?</p>
+            <a
+              href="https://www.instagram.com/urban_clyne"
+              target="_blank"
+              class="btn btn-outline-primary"
+            >
+              Contact @urban_clyne on Instagram
+              <i class="bi bi-instagram"></i>
+            </a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="container py-5">
+      {% if session.get('user_name') %}
+      <h3 class="mb-4">Welcome, {{ session['user_name'] }}</h3>
+      {% endif %}
+
+      
+
+      <!-- 🔁 Dynamic categories if provided; otherwise fallback to your original 3 cards -->
+      {% if categories %}
+      <div class="row">
+        {% for c in categories %}
+        <div class="col-md-4 mb-4">
+          <a
+            href="/category/{{ c.slug }}"
+            class="text-decoration-none"
+            onclick="setLastCategory('{{ c.slug }}')"
+          >
+            <div class="card shadow-sm">
+              <img
+                src="/static/images/{{ c.image }}"
+                class="card-img-top"
+                style="height: 250px; object-fit: cover"
+                alt="{{ c.name }}"
+              />
+              <div class="card-body text-center">
+                <h5 class="card-title text-dark">{{ c.name }}</h5>
+              </div>
+            </div>
+          </a>
+        </div>
+        {% endfor %}
+      </div>
+      {% else %}
+      <!-- ✅ Fallback (your original hard-coded categories) -->
+      <div class="row">
+        <div class="col-md-4 mb-4">
+          <a
+            href="/category/oversize"
+            class="text-decoration-none"
+            onclick="setLastCategory('oversize')"
+          >
+            <div class="card shadow-sm">
+              <img
+                src="/static/images/black_oversize.jpg"
+                class="card-img-top"
+                style="height: 250px; object-fit: cover"
+                alt="Oversize"
+              />
+              <div class="card-body text-center">
+                <h5 class="card-title text-dark">Oversize</h5>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <div class="col-md-4 mb-4">
+          <a
+            href="/category/tshirts"
+            class="text-decoration-none"
+            onclick="setLastCategory('tshirts')"
+          >
+            <div class="card shadow-sm">
+              <img
+                src="/static/images/white_tshirt.jpg"
+                class="card-img-top"
+                style="height: 250px; object-fit: cover"
+                alt="T-Shirts"
+              />
+              <div class="card-body text-center">
+                <h5 class="card-title text-dark">T-Shirts</h5>
+              </div>
+            </div>
+          </a>
+        </div>
+
+        <div class="col-md-4 mb-4">
+          <a
+            href="/category/caps"
+            class="text-decoration-none"
+            onclick="setLastCategory('caps')"
+          >
+            <div class="card shadow-sm">
+              <img
+                src="/static/images/cap1.jpg"
+                class="card-img-top"
+                style="height: 250px; object-fit: cover"
+                alt="Caps"
+              />
+              <div class="card-body text-center">
+                <h5 class="card-title text-dark">Caps</h5>
+              </div>
+            </div>
+          </a>
+        </div>
+      </div>
+      {% endif %}
+
+      <!-- ✅ Instagram Message Section -->
+      <div class="row">
+        <div class="col-md-6 mx-auto">
+          <div class="text-center mt-4 customize-message">
+            <p class="mb-0">
+              Want a custom print on your apparel?
+              <a
+                href="https://www.instagram.com/urban_clyne?igsh=NHZtZDE4MW53ZXoy&utm_source=qr"
+                target="_blank"
+                class="insta-link"
+              >
+                DM us on Instagram <i class="bi bi-instagram"></i>
+              </a>
+            </p>
+          </div>
+        </div>
+      </div>
+
+      <!-- ✅ Ad Image Section -->
+      {% if ad_exists %}
+      <div class="row mt-4">
+        <div class="col-12">
+          <img
+            src="{{ url_for('static', filename='ads/homepage_ad.jpg') }}"
+            alt="Ad Banner"
+            class="img-fluid rounded shadow"
+          />
+        </div>
+      </div>
+      {% endif %}
+    </div>
+
+    <!-- Set last visited category in localStorage -->
+    <script>
+      function setLastCategory(category) {
+        localStorage.setItem("lastCategory", category);
+      }
+    </script>
+
+    <!-- Bootstrap JS -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>
